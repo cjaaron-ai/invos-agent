@@ -9,12 +9,7 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textSecondary,
-        tabBarStyle: {
-          borderTopColor: COLORS.border,
-          backgroundColor: COLORS.white,
-          height: 85,
-          paddingBottom: 20,
-        },
+        tabBarStyle: { borderTopColor: COLORS.border, backgroundColor: '#FFF', height: 85, paddingBottom: 20 },
         headerShown: false,
       }}
     >
@@ -34,41 +29,21 @@ export default function TabLayout() {
         name="invoices"
         options={{
           title: '發票',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="receipt-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="subscriptions"
-        options={{
-          title: '訂閱',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="repeat-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="alerts"
-        options={{
-          title: '提醒',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="notifications-outline" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Ionicons name="receipt-outline" size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: '個人',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />,
         }}
       />
       {/* Hidden */}
       <Tabs.Screen name="savings" options={{ href: null }} />
       <Tabs.Screen name="agent" options={{ href: null }} />
+      <Tabs.Screen name="alerts" options={{ href: null }} />
+      <Tabs.Screen name="subscriptions" options={{ href: null }} />
     </Tabs>
   );
 }

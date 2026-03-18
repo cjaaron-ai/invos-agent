@@ -1,83 +1,139 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, FONTS } from '../../data/theme';
-
-const menuItems = [
-  { icon: 'card-outline' as const, label: '載具管理', desc: '已綁定 2 組載具' },
-  { icon: 'bar-chart-outline' as const, label: '消費統計', desc: '查看月度消費分析' },
-  { icon: 'settings-outline' as const, label: '通知設定', desc: '推播時段與頻率' },
-  { icon: 'help-circle-outline' as const, label: '使用說明', desc: '了解 AI 省錢功能' },
-  { icon: 'information-circle-outline' as const, label: '關於', desc: 'Invos Agent v1.0.0' },
-];
+import { COLORS } from '../../data/theme';
+import { SUBSCRIPTIONS, MONTHLY_SUB_TOTAL } from '../../data/subscriptions';
+import { MOCK_ALERTS } from '../../data/mock';
 
 export default function ProfileScreen() {
+  const activeSubs = SUBSCRIPTIONS.filter(s => s.status !== 'cancel');
+  const activeAlerts = MOCK_ALERTS.filter(a => a.enabled);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>個人</Text>
-      </View>
+    <SafeAreaView style={s.container}>
+      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+        <Text style={s.title}>個人</Text>
 
-      {/* User Card */}
-      <View style={styles.userCard}>
-        <View style={styles.avatar}>
-          <Ionicons name="person" size={36} color={COLORS.white} />
-        </View>
-        <View style={styles.userInfo}>
-          <Text style={styles.userName}>Demo 使用者</Text>
-          <Text style={styles.userSub}>已累計省下 $3,280</Text>
-        </View>
-      </View>
-
-      {/* Stats */}
-      <View style={styles.statsRow}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>47</Text>
-          <Text style={styles.statLabel}>發票數</Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>10</Text>
-          <Text style={styles.statLabel}>覆購商品</Text>
-        </View>
-        <View style={styles.statDivider} />
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>4</Text>
-          <Text style={styles.statLabel}>低價提醒</Text>
-        </View>
-      </View>
-
-      {/* Menu */}
-      {menuItems.map((item, idx) => (
-        <TouchableOpacity key={idx} style={styles.menuRow}>
-          <Ionicons name={item.icon} size={22} color={COLORS.primary} />
-          <View style={styles.menuText}>
-            <Text style={styles.menuLabel}>{item.label}</Text>
-            <Text style={styles.menuDesc}>{item.desc}</Text>
+        {/* User */}
+        <View style={s.userCard}>
+          <View style={s.avatar}>
+            <Ionicons name="person" size={28} color="#FFF" />
           </View>
-          <Ionicons name="chevron-forward" size={18} color={COLORS.textSecondary} />
-        </TouchableOpacity>
-      ))}
+          <View style={{ flex: 1 }}>
+            <Text style={s.userName}>Demo 使用者</Text>
+            <Text style={s.userSub}>已累計省下 $3,280</Text>
+          </View>
+        </View>
+
+        {/* Stats */}
+        <View style={s.statsRow}>
+          <View style={s.statItem}>
+            <Text style={s.statNum}>47</Text>
+            <Text style={s.statLabel}>發票</Text>
+          </View>
+          <View style={s.statDiv} />
+          <View style={s.statItem}>
+            <Text style={s.statNum}>10</Text>
+            <Text style={s.statLabel}>覆購商品</Text>
+          </View>
+          <View style={s.statDiv} />
+          <View style={s.statItem}>
+            <Text style={s.statNum}>{activeSubs.length}</Text>
+            <Text style={s.statLabel}>訂閱中</Text>
+          </View>
+        </View>
+
+        {/* Subscriptions Summary */}
+        <Text style={s.sectionTitle}>🔄 訂閱服務</Text>
+        <View style={s.subSummary}>
+          <Text style={s.subTotal}>${MONTHLY_SUB_TOTAL.toLocaleString()}/月</Text>
+          <Text style={s.subCount}>{activeSubs.length} 個進行中</Text>
+        </View>
+        {activeSubs.slice(0, 4).map(sub => (
+          <View key={sub.id} style={s.subRow}>
+            <Text style={s.subIcon}>{sub.icon}</Text>
+            <Text style={s.subName}>{sub.name}</Text>
+            <Text style={s.subPrice}>${sub.monthlyAmount}/月</Text>
+          </View>
+        ))}
+        {activeSubs.length > 4 && (
+          <TouchableOpacity style={s.moreBtn}>
+            <Text style={s.moreBtnText}>查看全部 {activeSubs.length} 個訂閱 →</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Alerts Summary */}
+        <Text style={s.sectionTitle}>🔔 低價提醒</Text>
+        {activeAlerts.map(alert => (
+          <View key={alert.id} style={s.alertRow}>
+            <Text style={s.alertEmoji}>{alert.emoji}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={s.alertName}>{alert.productName}</Text>
+              <Text style={s.alertMeta}>
+                {alert.mode === 'percentage' ? `低於 ${alert.threshold}%` :
+                 alert.mode === 'fixed' ? `低於 $${alert.threshold}` : '歷史最低價'}
+              </Text>
+            </View>
+            <View style={s.alertActive}><Text style={s.alertActiveText}>監控中</Text></View>
+          </View>
+        ))}
+
+        {/* Settings */}
+        <Text style={s.sectionTitle}>⚙️ 設定</Text>
+        {[
+          { icon: 'card-outline' as const, label: '載具管理' },
+          { icon: 'time-outline' as const, label: '通知時段' },
+          { icon: 'help-circle-outline' as const, label: '使用說明' },
+          { icon: 'information-circle-outline' as const, label: '關於' },
+        ].map((item, i) => (
+          <TouchableOpacity key={i} style={s.menuRow}>
+            <Ionicons name={item.icon} size={20} color={COLORS.primary} />
+            <Text style={s.menuLabel}>{item.label}</Text>
+            <Ionicons name="chevron-forward" size={16} color="#CCC" />
+          </TouchableOpacity>
+        ))}
+
+        <View style={{ height: 40 }} />
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.white },
-  header: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
-  headerTitle: { ...FONTS.titleLg, color: COLORS.textPrimary },
-  userCard: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 20 },
-  avatar: { width: 60, height: 60, borderRadius: 30, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center' },
-  userInfo: { marginLeft: 16 },
-  userName: { ...FONTS.titleMd, color: COLORS.textPrimary },
-  userSub: { ...FONTS.caption, color: COLORS.savingsGreen, marginTop: 4 },
-  statsRow: { flexDirection: 'row', marginHorizontal: 16, padding: 16, backgroundColor: COLORS.cardGray, borderRadius: 12, marginBottom: 24 },
+const s = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FAFBFD' },
+  scroll: { padding: 20 },
+  title: { fontSize: 28, fontWeight: '800', color: '#1A1A1A', marginBottom: 16 },
+
+  userCard: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
+  avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: COLORS.primary, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
+  userName: { fontSize: 18, fontWeight: '700', color: '#1A1A1A' },
+  userSub: { fontSize: 13, color: COLORS.savingsGreen, marginTop: 2, fontWeight: '600' },
+
+  statsRow: { flexDirection: 'row', backgroundColor: '#FFF', borderRadius: 14, padding: 16, marginBottom: 20 },
   statItem: { flex: 1, alignItems: 'center' },
-  statValue: { fontSize: 22, fontWeight: '700', color: COLORS.primary },
-  statLabel: { ...FONTS.small, color: COLORS.textSecondary, marginTop: 4 },
-  statDivider: { width: 1, backgroundColor: COLORS.border },
-  menuRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: COLORS.border },
-  menuText: { flex: 1, marginLeft: 12 },
-  menuLabel: { ...FONTS.bodyBold, color: COLORS.textPrimary },
-  menuDesc: { ...FONTS.small, color: COLORS.textSecondary, marginTop: 2 },
+  statNum: { fontSize: 20, fontWeight: '800', color: COLORS.primary },
+  statLabel: { fontSize: 11, color: '#999', marginTop: 4 },
+  statDiv: { width: 1, backgroundColor: '#F0F0F0' },
+
+  sectionTitle: { fontSize: 15, fontWeight: '700', color: '#1A1A1A', marginBottom: 10, marginTop: 8 },
+
+  subSummary: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 },
+  subTotal: { fontSize: 22, fontWeight: '800', color: '#1A1A1A' },
+  subCount: { fontSize: 12, color: '#999' },
+  subRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', borderRadius: 10, padding: 12, marginBottom: 6 },
+  subIcon: { fontSize: 20, marginRight: 10 },
+  subName: { flex: 1, fontSize: 14, fontWeight: '600', color: '#1A1A1A' },
+  subPrice: { fontSize: 13, color: '#999', fontWeight: '600' },
+  moreBtn: { alignItems: 'center', paddingVertical: 10 },
+  moreBtnText: { fontSize: 13, color: COLORS.primary, fontWeight: '600' },
+
+  alertRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', borderRadius: 10, padding: 12, marginBottom: 6 },
+  alertEmoji: { fontSize: 20, marginRight: 10 },
+  alertName: { fontSize: 14, fontWeight: '600', color: '#1A1A1A' },
+  alertMeta: { fontSize: 11, color: '#999', marginTop: 2 },
+  alertActive: { backgroundColor: '#E8F5E9', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  alertActiveText: { fontSize: 10, fontWeight: '700', color: COLORS.savingsGreen },
+
+  menuRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', borderRadius: 10, padding: 14, marginBottom: 6, gap: 10 },
+  menuLabel: { flex: 1, fontSize: 14, fontWeight: '600', color: '#1A1A1A' },
 });

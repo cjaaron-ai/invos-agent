@@ -25,7 +25,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <View>
               <Ionicons name="sparkles" size={size} color={color} />
-              <View style={styles.liveDot} />
+              <View style={st.dot} />
             </View>
           ),
         }}
@@ -36,6 +36,15 @@ export default function TabLayout() {
           title: '發票',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="receipt-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="subscriptions"
+        options={{
+          title: '訂閱',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="repeat-outline" size={size} color={color} />
           ),
         }}
       />
@@ -57,23 +66,13 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* Hidden tabs */}
+      {/* Hidden */}
       <Tabs.Screen name="savings" options={{ href: null }} />
       <Tabs.Screen name="agent" options={{ href: null }} />
     </Tabs>
   );
 }
 
-const styles = StyleSheet.create({
-  liveDot: {
-    position: 'absolute',
-    top: -2,
-    right: -6,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#00C853',
-    borderWidth: 1.5,
-    borderColor: COLORS.white,
-  },
+const st = StyleSheet.create({
+  dot: { position: 'absolute', top: -2, right: -6, width: 8, height: 8, borderRadius: 4, backgroundColor: '#00C853', borderWidth: 1.5, borderColor: '#FFF' },
 });
